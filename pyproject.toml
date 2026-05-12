@@ -1,0 +1,60 @@
+[project]
+name = "invoice-parser"
+version = "0.1.0"
+description = "Invoice parsing service — hybrid OCR + Vision LLM with cross-validation"
+requires-python = ">=3.11"
+dependencies = [
+    # API
+    "fastapi>=0.111.0",
+    "uvicorn>=0.30.1",
+    "python-multipart>=0.0.9",
+    # Settings
+    "pydantic>=2.7.1",
+    "pydantic-settings>=2.3.0",
+    "python-dotenv>=1.0.1",
+    # Database
+    "sqlalchemy>=2.0.30",
+    "asyncpg>=0.29.0",
+    "alembic>=1.13.1",
+    # PDF rendering
+    "pypdfium2>=4.29.0",
+    # Excel
+    "openpyxl>=3.1.2",
+    # AWS (R2 storage only — Textract replaced by Google Vision)
+    "boto3>=1.34.69",
+    # Google (Vision OCR + Gemini + Drive)
+    "google-cloud-vision>=3.7.2",
+    "google-genai>=2.0.0",
+    "google-api-python-client>=2.126.0",
+    "google-auth>=2.29.0",
+    "google-auth-httplib2>=0.2.0",
+    "google-auth-oauthlib>=1.2.0",
+    # Image processing
+    "Pillow>=11.0.0",
+    # Fuzzy string matching (cross-validation)
+    "rapidfuzz>=3.8.1",
+    # Async / rate limiting
+    "aiohttp>=3.9.5",
+    "aiolimiter>=1.1.0",
+    # Logging
+    "structlog>=24.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.6",
+    "httpx>=0.27.0",
+    "respx>=0.21.1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/invoice_parser"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
