@@ -7,7 +7,7 @@ from sqlalchemy import text
 from invoice_parser.db.session import AsyncSessionLocal
 
 # These paths skip auth — needed for infra health checks and OpenAPI docs.
-EXEMPT_PATHS = {"/", "/health", "/docs", "/openapi.json", "/redoc"}
+EXEMPT_PATHS = {"/", "/health"}
 
 
 async def auth_middleware(request: Request, call_next):
