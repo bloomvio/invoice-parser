@@ -202,19 +202,29 @@ async def worker_loop() -> None:
     log.info("worker_loop_starting")
 
     while True:
-        async with engine.begin() as conn:
-            job = await claim_next_job(conn)
-
-        if not job:
-            await asyncio.sleep(settings.worker_poll_interval_seconds)
-            continue
-
         try:
-            await _process_job(job)
-        except Exception as exc:
-            logger.exception("job_failed_unexpectedly", job_id=job["id"], error=str(exc))
             async with engine.begin() as conn:
-                await mark_job_failed(conn, job["id"], str(exc))
+                job = await claim_next_job(conn)
+
+            if not job:
+                await asyncio.sleep(settings.worker_poll_interval_seconds)
+                continue
+
+            try:
+                await _process_job(job)
+            except Exception as exc:
+                log.exception("job_failed_unexpectedly", job_id=job["id"], error=str(exc))
+                try:
+                    async with engine.begin() as conn:
+                        await mark_job_failed(conn, job["id"], str(exc))
+                except Exception:
+                    log.exception("mark_job_failed_error", job_id=job["id"])
+
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            log.exception("worker_poll_error", error=str(exc))
+            await asyncio.sleep(5)
 
 
 async def main() -> None:
