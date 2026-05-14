@@ -13,9 +13,8 @@ RUN pip install --no-cache-dir -e .
 
 COPY . .
 
-RUN chmod +x scripts/start.sh scripts/start_worker.sh
+RUN chmod +x scripts/entrypoint.sh
 
 EXPOSE 8000
 
-# Default: API. Override CMD for worker: scripts/start_worker.sh
-CMD ["scripts/start.sh"]
+CMD ["sh", "scripts/entrypoint.sh"]
